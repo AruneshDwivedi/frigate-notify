@@ -93,7 +93,10 @@ func SendMatrix(event models.Event, snapshot io.Reader, provider notifMeta) {
 	if event.HasSnapshot {
 		var media *mautrix.RespMediaUpload
 		img, _ := io.ReadAll(snapshot)
-		media, _ = m.UploadMedia(context.Background(), mautrix.ReqUploadMedia{ContentBytes: img, ContentType: "image/jpeg", FileName: "snapshot.jpg"})
+		media, err = m.UploadMedia(context.Background(), mautrix.ReqUploadMedia{ContentBytes: img, ContentType: "image/jpeg", FileName: "snapshot.jpg"})
+		if err != nil {
+			log.Warn().Str("event_id", event.ID).Err(err).Msg("Unable to upload media")
+		}
 		_, err = m.SendMessageEvent(context.Background(), id.RoomID(profile.RoomID), evt.EventMessage, &evt.MessageEventContent{
 			MsgType: evt.MsgImage,
 			Body:    "snapshot.jpg",
