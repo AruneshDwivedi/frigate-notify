@@ -47,7 +47,10 @@ func SendAlert(events []models.Event) {
 	// Create copy of snapshot for each alerting method
 	var snap []byte
 	if snapshot != nil {
-		snap, _ = io.ReadAll(snapshot)
+		snap, err = io.ReadAll(snapshot)
+		if err != nil {
+			log.Warn().Err(err).Msg("Failed to read snapshot")
+		}
 	} else {
 		event.HasSnapshot = false
 	}
